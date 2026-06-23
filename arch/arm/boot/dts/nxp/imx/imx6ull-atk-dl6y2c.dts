@@ -15,9 +15,44 @@
 		stdout-path = &uart1;
 	};
 
+	aliases {
+		can0 = &can1;
+	};
+
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x20000000>;
+	};
+
+	pdm_bus: pdm-bus {
+		compatible = "vendor,pdm-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pdm_led_gpio>;
+
+		pdm_led_gpio: led@0 {
+			compatible = "pdm,led-gpio";
+			reg = <0>;
+			led-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
+			max-brightness = <1>;
+			default-state = "off";
+		};
+
+		pdm_led_pwm: led@1 {
+			compatible = "pdm,led-pwm";
+			reg = <1>;
+			pwms = <&pwm1 0 5000000 0>;
+			max-brightness = <255>;
+			default-state = "off";
+		};
+
+		pdm_mcu_can: mcu@3 {
+			compatible = "pdm,mcu-can";
+			reg = <3>;
+			can-interface = "can0";
+			rx-timeout-ms = <100>;
+		};
 	};
 
 	reg_3v3: regulator-3v3 {
@@ -40,9 +75,32 @@
 	};
 };
 
+&can1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan1>;
+	status = "okay";
+};
+
 &clks {
 	assigned-clocks = <&clks IMX6UL_CLK_PLL3_PFD2>;
 	assigned-clock-rates = <320000000>;
+};
+
+&ecspi3 {
+	cs-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi3>;
+	status = "okay";
+
+	pdm_mcu_spi: mcu@0 {
+		compatible = "pdm,mcu-spi";
+		reg = <0>;
+		pdm,id = <1>;
+		spi-max-frequency = <1000000>;
+		rx-timeout-ms = <100>;
+		command-bytes = <1>;
+		address-bytes = <1>;
+	};
 };
 
 &fec1 {
@@ -94,6 +152,28 @@
 	};
 };
 
+&i2c1 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	status = "okay";
+
+	pdm_mcu_i2c: mcu@10 {
+		compatible = "pdm,mcu-i2c";
+		reg = <0x10>;
+		pdm,id = <2>;
+		rx-timeout-ms = <100>;
+		command-bytes = <1>;
+		address-bytes = <1>;
+	};
+};
+
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
 &snvs_poweroff {
 	status = "okay";
 };
@@ -102,6 +182,19 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
+};
+
+&uart3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart3>;
+	status = "okay";
+
+	pdm_mcu_uart: mcu {
+		compatible = "pdm,mcu-uart";
+		pdm,id = <0>;
+		current-speed = <115200>;
+		rx-timeout-ms = <100>;
+	};
 };
 
 &usdhc1 {
@@ -123,6 +216,15 @@
 };
 
 &iomuxc {
+	pinctrl_ecspi3: ecspi3grp {
+		fsl,pins = <
+			MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK	0x10b0
+			MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI	0x10b0
+			MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO	0x10b0
+			MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20	0x10b0
+		>;
+	};
+
 	pinctrl_enet1: enet1grp {
 		fsl,pins = <
 			MX6UL_PAD_ENET1_RX_EN__ENET1_RX_EN	0x1b0b0
@@ -163,10 +265,43 @@
 		>;
 	};
 
+	pinctrl_flexcan1: flexcan1grp {
+		fsl,pins = <
+			MX6UL_PAD_UART3_CTS_B__FLEXCAN1_TX	0x1b020
+			MX6UL_PAD_UART3_RTS_B__FLEXCAN1_RX	0x1b020
+		>;
+	};
+
+	pinctrl_i2c1: i2c1grp {
+		fsl,pins = <
+			MX6UL_PAD_UART4_TX_DATA__I2C1_SCL	0x4001b8b0
+			MX6UL_PAD_UART4_RX_DATA__I2C1_SDA	0x4001b8b0
+		>;
+	};
+
+	pinctrl_pdm_led_gpio: pdmledgpiogrp {
+		fsl,pins = <
+			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x1b0b0
+		>;
+	};
+
+	pinctrl_pwm1: pwm1grp {
+		fsl,pins = <
+			MX6UL_PAD_GPIO1_IO08__PWM1_OUT		0x110b0
+		>;
+	};
+
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX	0x1b0b1
 			MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX	0x1b0b1
+		>;
+	};
+
+	pinctrl_uart3: uart3grp {
+		fsl,pins = <
+			MX6UL_PAD_UART3_TX_DATA__UART3_DCE_TX	0x1b0b1
+			MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX	0x1b0b1
 		>;
 	};
 
