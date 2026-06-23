@@ -16,3 +16,48 @@
 	assigned-clocks = <&clks IMX6UL_CLK_PLL3_PFD2>;
 	assigned-clock-rates = <320000000>;
 };
+
+/ {
+	/delete-node/ spi-4;
+};
+
+&reg_can_3v3 {
+	/delete-property/ gpios;
+};
+
+&i2c2 {
+	camera@3c {
+		/delete-property/ powerdown-gpios;
+		/delete-property/ reset-gpios;
+	};
+};
+
+&iomuxc {
+	pinctrl_enet1_rst: enet1rstgrp {
+		fsl,pins = <
+			MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07	0x0b0b0
+		>;
+	};
+
+	pinctrl_enet2_rst: enet2rstgrp {
+		fsl,pins = <
+			MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x0b0b0
+		>;
+	};
+};
+
+&ethphy0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet1_rst>;
+	reset-gpios = <&gpio5 7 GPIO_ACTIVE_LOW>;
+	reset-assert-us = <10000>;
+	reset-deassert-us = <30000>;
+};
+
+&ethphy1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet2_rst>;
+	reset-gpios = <&gpio5 8 GPIO_ACTIVE_LOW>;
+	reset-assert-us = <10000>;
+	reset-deassert-us = <30000>;
+};
