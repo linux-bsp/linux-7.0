@@ -666,6 +666,8 @@ struct sysrq_state {
 	unsigned int shift;
 	unsigned int shift_use;
 	bool active;
+	bool ctrl_u_active;
+	unsigned int ctrl_u_key;
 	bool need_reinject;
 	bool reinjecting;
 
@@ -730,6 +732,12 @@ static void sysrq_handle_reset_request(struct sysrq_state *state)
 			jiffies + msecs_to_jiffies(sysrq_reset_downtime_ms));
 	else
 		sysrq_do_reset(&state->keyreset_timer);
+}
+
+static bool sysrq_ctrl_down(struct sysrq_state *state)
+{
+	return test_bit(KEY_LEFTCTRL, state->key_down) ||
+	       test_bit(KEY_RIGHTCTRL, state->key_down);
 }
 
 static void sysrq_detect_reset_sequence(struct sysrq_state *state,
@@ -829,6 +837,7 @@ static bool sysrq_handle_keypress(struct sysrq_state *sysrq,
 				  unsigned int code, int value)
 {
 	bool was_active = sysrq->active;
+	bool ctrl_u_done = false;
 	bool suppress;
 
 	switch (code) {
@@ -884,6 +893,17 @@ static bool sysrq_handle_keypress(struct sysrq_state *sysrq,
 
 		break;
 
+	case KEY_U:
+		if (!sysrq->active && value == 1 && sysrq_ctrl_down(sysrq)) {
+			sysrq->active = true;
+			sysrq->ctrl_u_active = true;
+			sysrq->ctrl_u_key = KEY_RESERVED;
+			sysrq->shift_use = sysrq->shift;
+			sysrq->need_reinject = false;
+			break;
+		}
+		fallthrough;
+
 	default:
 		if (sysrq->active && value && value != 2) {
 			unsigned char c = sysrq_xlate[code];
@@ -892,8 +912,22 @@ static bool sysrq_handle_keypress(struct sysrq_state *sysrq,
 			if (sysrq->shift_use != KEY_RESERVED)
 				c = toupper(c);
 			__handle_sysrq(c, true);
+			if (sysrq->ctrl_u_active) {
+				sysrq->active = false;
+				sysrq->ctrl_u_key = code;
+				ctrl_u_done = true;
+			}
 		}
 		break;
+	}
+
+	if (ctrl_u_done)
+		return true;
+
+	if (sysrq->ctrl_u_active && value == 0 && code == sysrq->ctrl_u_key) {
+		sysrq->ctrl_u_active = false;
+		sysrq->ctrl_u_key = KEY_RESERVED;
+		return true;
 	}
 
 	suppress = sysrq->active;
@@ -1017,9 +1051,9 @@ static void sysrq_disconnect(struct input_handle *handle)
 }
 
 /*
- * We are matching on KEY_LEFTALT instead of KEY_SYSRQ because not all
+ * We are matching on modifier keys instead of KEY_SYSRQ because not all
  * keyboards have SysRq key predefined and so user may add it to keymap
- * later, but we expect all such keyboards to have left alt.
+ * later.
  */
 static const struct input_device_id sysrq_ids[] = {
 	{
@@ -1027,6 +1061,18 @@ static const struct input_device_id sysrq_ids[] = {
 				INPUT_DEVICE_ID_MATCH_KEYBIT,
 		.evbit = { [BIT_WORD(EV_KEY)] = BIT_MASK(EV_KEY) },
 		.keybit = { [BIT_WORD(KEY_LEFTALT)] = BIT_MASK(KEY_LEFTALT) },
+	},
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
+				INPUT_DEVICE_ID_MATCH_KEYBIT,
+		.evbit = { [BIT_WORD(EV_KEY)] = BIT_MASK(EV_KEY) },
+		.keybit = { [BIT_WORD(KEY_LEFTCTRL)] = BIT_MASK(KEY_LEFTCTRL) },
+	},
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
+				INPUT_DEVICE_ID_MATCH_KEYBIT,
+		.evbit = { [BIT_WORD(EV_KEY)] = BIT_MASK(EV_KEY) },
+		.keybit = { [BIT_WORD(KEY_RIGHTCTRL)] = BIT_MASK(KEY_RIGHTCTRL) },
 	},
 	{ },
 };
