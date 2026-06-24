@@ -89,8 +89,6 @@
 };
 
 &ecspi3 {
-	/delete-property/ dmas;
-	/delete-property/ dma-names;
 	cs-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi3>;
