@@ -52,8 +52,10 @@
 		pdm_mcu_can: mcu@3 {
 			compatible = "pdm,mcu-can";
 			reg = <3>;
-			can-interface = "can0";
-			rx-timeout-ms = <100>;
+			can-controller = <&can1>;
+			tx-can-id = <0x321>;
+			rx-can-id = <0x322>;
+			rx-timeout-ms = <500>;
 		};
 	};
 
