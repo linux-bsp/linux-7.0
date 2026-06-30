@@ -19,6 +19,7 @@
 		can0 = &can1;
 		mmc0 = &usdhc1;
 		mmc1 = &usdhc2;
+		pdm-mcu0 = &pdm_mcu_can;
 	};
 
 	memory@80000000 {
@@ -49,9 +50,10 @@
 			default-state = "off";
 		};
 
-		pdm_mcu_can: mcu@3 {
+		pdm_mcu_can: mcu@0 {
 			compatible = "pdm,mcu-can";
-			reg = <3>;
+			reg = <0>;
+			pdm,owner = "user";
 			can-controller = <&can1>;
 			tx-can-id = <0x321>;
 			rx-can-id = <0x322>;
@@ -99,7 +101,7 @@
 	pdm_mcu_spi: mcu@0 {
 		compatible = "pdm,mcu-spi";
 		reg = <0>;
-		pdm,id = <1>;
+		status = "disabled";
 		spi-max-frequency = <1000000>;
 		rx-timeout-ms = <100>;
 		command-bytes = <1>;
@@ -165,7 +167,7 @@
 	pdm_mcu_i2c: mcu@10 {
 		compatible = "pdm,mcu-i2c";
 		reg = <0x10>;
-		pdm,id = <2>;
+		status = "disabled";
 		rx-timeout-ms = <100>;
 		command-bytes = <1>;
 		address-bytes = <1>;
@@ -195,7 +197,7 @@
 
 	pdm_mcu_uart: mcu {
 		compatible = "pdm,mcu-uart";
-		pdm,id = <0>;
+		status = "disabled";
 		current-speed = <115200>;
 		rx-timeout-ms = <100>;
 	};
