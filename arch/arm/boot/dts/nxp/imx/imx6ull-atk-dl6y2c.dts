@@ -50,9 +50,9 @@
 			default-state = "off";
 		};
 
-		pdm_mcu_can: mcu@0 {
+		pdm_mcu_can: mcu@3 {
 			compatible = "pdm,mcu-can";
-			reg = <0>;
+			reg = <3>;
 			pdm,owner = "user";
 			can-controller = <&can1>;
 			tx-can-id = <0x321>;
