@@ -55,9 +55,6 @@
 			reg = <3>;
 			pdm,owner = "user";
 			can-controller = <&can1>;
-			tx-can-id = <0x321>;
-			rx-can-id = <0x322>;
-			rx-timeout-ms = <500>;
 		};
 	};
 
@@ -103,9 +100,6 @@
 		reg = <0>;
 		status = "disabled";
 		spi-max-frequency = <1000000>;
-		rx-timeout-ms = <100>;
-		command-bytes = <1>;
-		address-bytes = <1>;
 	};
 };
 
@@ -168,9 +162,6 @@
 		compatible = "pdm,mcu-i2c";
 		reg = <0x10>;
 		status = "disabled";
-		rx-timeout-ms = <100>;
-		command-bytes = <1>;
-		address-bytes = <1>;
 	};
 };
 
@@ -198,8 +189,6 @@
 	pdm_mcu_uart: mcu {
 		compatible = "pdm,mcu-uart";
 		status = "disabled";
-		current-speed = <115200>;
-		rx-timeout-ms = <100>;
 	};
 };
 
