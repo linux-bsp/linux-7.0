@@ -27,7 +27,7 @@
 	};
 
 	pdm_bus: pdm-bus {
-		compatible = "vendor,pdm-bus";
+		compatible = "pdm,bus-type";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		pinctrl-names = "default";
@@ -53,12 +53,9 @@
 			compatible = "pdm,mcu-can";
 			reg = <3>;
 			pdm,name = "main_mcu";
-			pdm,instance-id = <0>;
+			pdm,id = <0>;
 			can-controller = <&can1>;
-			tx-can-id = <0x321>;
-			rx-can-id = <0x322>;
-			rx-timeout-ms = <100>;
-			/* can-fd; */  /* Uncomment to enable CAN FD */
+			pdm,rx-timeout-ms = <100>;
 		};
 	};
 
@@ -103,10 +100,10 @@
 		compatible = "pdm,mcu-spi";
 		reg = <0>;
 		pdm,name = "spi_mcu";
-		pdm,instance-id = <1>;
+		pdm,id = <1>;
 		spi-max-frequency = <1000000>;
 		pdm,command-bytes = <2>;
-		rx-timeout-ms = <100>;
+		pdm,rx-timeout-ms = <100>;
 		status = "disabled";
 	};
 };
@@ -170,9 +167,9 @@
 		compatible = "pdm,mcu-i2c";
 		reg = <0x10>;
 		pdm,name = "i2c_mcu";
-		pdm,instance-id = <2>;
+		pdm,id = <2>;
 		pdm,command-bytes = <1>;
-		rx-timeout-ms = <100>;
+		pdm,rx-timeout-ms = <100>;
 		status = "disabled";
 	};
 };
@@ -199,11 +196,11 @@
 	status = "disabled";
 
 	pdm_mcu_uart: mcu {
-		compatible = "pdm,mcu-uart-serdev";
+		compatible = "pdm,mcu-uart";
 		pdm,name = "uart_mcu";
-		pdm,instance-id = <3>;
+		pdm,id = <3>;
 		current-speed = <115200>;
-		rx-timeout-ms = <100>;
+		pdm,rx-timeout-ms = <100>;
 		status = "disabled";
 	};
 };
