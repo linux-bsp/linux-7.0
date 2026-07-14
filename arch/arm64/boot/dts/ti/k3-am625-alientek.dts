@@ -1,0 +1,78 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * ALIENTEK ATK-DLAM62xB device tree
+ */
+
+/dts-v1/;
+
+#include "k3-am625.dtsi"
+#include "k3-am62x-sk-common.dtsi"
+
+/ {
+	model = "ALIENTEK ATK-DLAM62xB";
+	compatible = "alientek,atk-dlam62xb", "ti,am625";
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x00000000 0x80000000 0x00000000 0x40000000>;
+		bootph-pre-ram;
+	};
+
+	/* These peripherals are specific to the TI AM625 SK. */
+	/delete-node/ leds;
+	/delete-node/ clk-0;
+	/delete-node/ sound;
+	/delete-node/ connector-hdmi;
+};
+
+&main_i2c0 {
+	/delete-node/ eeprom@51;
+	/delete-node/ tps6598x@3f;
+};
+
+&main_i2c1 {
+	/delete-node/ audio-codec@1b;
+	/delete-node/ bridge-hdmi@3b;
+};
+
+&usb0 {
+	/delete-property/ usb-role-switch;
+	/delete-node/ port;
+};
+
+&mcasp1 {
+	status = "disabled";
+};
+
+&dss {
+	status = "disabled";
+};
+
+&dss_ports {
+	/delete-node/ port@1;
+};
+
+/* The TF card and VDDSHV_SDIO are supplied directly from fixed 3.3 V. */
+&sdhci1 {
+	max-frequency = <25000000>;
+	no-1-8-v;
+	ti,otap-del-sel-legacy = <0x8>;
+	ti,otap-del-sel-sd-hs = <0x0>;
+	ti,otap-del-sel-sdr12 = <0x0>;
+	ti,otap-del-sel-sdr25 = <0x0>;
+	ti,otap-del-sel-sdr50 = <0x8>;
+	ti,otap-del-sel-sdr104 = <0x7>;
+	ti,otap-del-sel-ddr50 = <0x4>;
+	ti,itap-del-sel-legacy = <0xa>;
+	ti,itap-del-sel-sd-hs = <0x1>;
+	ti,itap-del-sel-sdr12 = <0xa>;
+	ti,itap-del-sel-sdr25 = <0x1>;
+};
+
+/* The board uses a Motorcomm YT8531C instead of the TI SK DP83867. */
+&cpsw3g_phy0 {
+	/delete-property/ ti,rx-internal-delay;
+	/delete-property/ ti,fifo-depth;
+	/delete-property/ ti,min-output-impedance;
+	motorcomm,auto-sleep-disabled;
+};
