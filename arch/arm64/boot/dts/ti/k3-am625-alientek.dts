@@ -76,3 +76,67 @@
 	/delete-property/ ti,min-output-impedance;
 	motorcomm,auto-sleep-disabled;
 };
+
+&cpsw3g {
+	status = "okay";
+};
+
+&cpsw_port2 {
+	status = "disabled";
+};
+
+&usbss0 {
+	status = "disabled";
+};
+
+&usbss1 {
+	status = "disabled";
+};
+
+&gpu {
+	status = "disabled";
+};
+
+&pruss {
+	status = "disabled";
+};
+
+&ecap0 {
+	status = "disabled";
+};
+
+&ecap2 {
+	status = "disabled";
+};
+
+&epwm1 {
+	status = "disabled";
+};
+
+&mcu_m4fss {
+	status = "disabled";
+};
+
+&wkup_r5fss0 {
+	status = "disabled";
+};
+
+&wkup_r5fss0_core0 {
+	status = "disabled";
+};
+
+&main_rti1 {
+	status = "disabled";
+};
+
+&main_rti2 {
+	status = "disabled";
+};
+
+&main_rti3 {
+	status = "disabled";
+};
+
+&main_rti15 {
+	status = "disabled";
+};
