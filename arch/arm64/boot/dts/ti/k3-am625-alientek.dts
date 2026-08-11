@@ -52,6 +52,21 @@
 	/delete-node/ port@1;
 };
 
+&main_pmx0 {
+	/* Servo/debug PWM on fan connector J15 pin 4. */
+	atk_epwm0_b_pins_default: atk-epwm0b-default-pins {
+		pinctrl-single,pins = <
+			AM62X_IOPAD(0x01b8, PIN_OUTPUT, 2) /* (C13) SPI0_CS1.EHRPWM0_B */
+		>;
+	};
+};
+
+&epwm0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&atk_epwm0_b_pins_default>;
+	status = "okay";
+};
+
 /* The TF card and VDDSHV_SDIO are supplied directly from fixed 3.3 V. */
 &sdhci1 {
 	max-frequency = <25000000>;
