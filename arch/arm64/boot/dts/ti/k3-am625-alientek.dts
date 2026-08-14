@@ -12,10 +12,34 @@
 	model = "ALIENTEK ATK-DLAM62xB";
 	compatible = "alientek,atk-dlam62xb", "ti,am625";
 
+	aliases {
+		can0 = &main_mcan0;
+	};
+
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x00000000 0x80000000 0x00000000 0x40000000>;
 		bootph-pre-ram;
+	};
+
+	pdm_bus: pdm-bus {
+		compatible = "pdm,bus-type";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		main_mcu: mcu@1 {
+			compatible = "pdm,mcu-can";
+			reg = <1>;
+			pdm,id = <0>;
+			pdm,name = "main_mcu";
+			can-controller = <&main_mcan0>;
+			pdm,rx-timeout-ms = <100>;
+			pdm,can-mode = "pdm-v1";
+			pdm,can-fd;
+			pdm,can-extended-id;
+			pdm,can-tx-id = <0x13402802>;
+			pdm,can-rx-id = <0x00235803>;
+		};
 	};
 
 	/* These peripherals are specific to the TI AM625 SK. */
@@ -53,12 +77,25 @@
 };
 
 &main_pmx0 {
+	atk_main_mcan0_pins_default: atk-main-mcan0-default-pins {
+		pinctrl-single,pins = <
+			AM62X_IOPAD(0x01dc, PIN_INPUT, 0) /* (E15) MCAN0_RX */
+			AM62X_IOPAD(0x01d8, PIN_OUTPUT, 0) /* (C15) MCAN0_TX */
+		>;
+	};
+
 	/* Servo/debug PWM on fan connector J15 pin 4. */
 	atk_epwm0_b_pins_default: atk-epwm0b-default-pins {
 		pinctrl-single,pins = <
 			AM62X_IOPAD(0x01b8, PIN_OUTPUT, 2) /* (C13) SPI0_CS1.EHRPWM0_B */
 		>;
 	};
+};
+
+&main_mcan0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&atk_main_mcan0_pins_default>;
+	status = "okay";
 };
 
 &epwm0 {
