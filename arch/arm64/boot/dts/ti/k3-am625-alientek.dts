@@ -12,11 +12,6 @@
 	model = "ALIENTEK ATK-DLAM62xB";
 	compatible = "alientek,atk-dlam62xb", "ti,am625";
 
-	aliases {
-		can0 = &main_mcan0;
-		can1 = &mcu_mcan0;
-	};
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x00000000 0x80000000 0x00000000 0x40000000>;
@@ -35,27 +30,17 @@
 			pdm,name = "main_mcu";
 			can-controller = <&main_mcan0>;
 			pdm,rx-timeout-ms = <100>;
-			pdm,can-mode = "platform";
-			pdm,can-extended-id;
-			pdm,can-tx-id = <0x1B5BF800>;
-			pdm,can-rx-id = <0x1B5BF800>;
+			pdm,can-fd;
 		};
 
-		platform_can: mcu@2 {
-			compatible = "pdm,mcu-can";
+		satellite: satellite@2 {
+			compatible = "pdm,satellite-can";
 			reg = <2>;
-			pdm,id = <1>;
-			pdm,name = "platform_can";
+			pdm,id = <0>;
+			pdm,name = "satellite";
 			can-controller = <&mcu_mcan0>;
 			pdm,rx-timeout-ms = <100>;
-			pdm,can-mode = "raw-can";
 			pdm,can-fd;
-			pdm,can-extended-id;
-			pdm,can-rx-ids = <0x13402802
-				0x13402022 0x13402042 0x13402062
-				0x13402082 0x134020a2 0x134020c2
-				0x134020e2 0x13403102 0x13403082
-				0x1B5BF800>;
 		};
 	};
 
