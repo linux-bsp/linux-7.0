@@ -12,6 +12,10 @@
 	model = "ALIENTEK ATK-DLAM62xB";
 	compatible = "alientek,atk-dlam62xb", "ti,am625";
 
+	aliases {
+		serial3 = &main_uart2;
+	};
+
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x00000000 0x80000000 0x00000000 0x40000000>;
@@ -79,6 +83,14 @@
 };
 
 &main_pmx0 {
+	/* J11 pins 3/4: UART2 via automatic-direction SP3485 U12. */
+	atk_main_uart2_pins_default: atk-main-uart2-default-pins {
+		pinctrl-single,pins = <
+			AM62X_IOPAD(0x01d0, PIN_INPUT, 3) /* (A15) UART0_CTSn.UART2_RXD */
+			AM62X_IOPAD(0x01d4, PIN_OUTPUT, 3) /* (B15) UART0_RTSn.UART2_TXD */
+		>;
+	};
+
 	atk_main_mcan0_pins_default: atk-main-mcan0-default-pins {
 		pinctrl-single,pins = <
 			AM62X_IOPAD(0x01dc, PIN_INPUT, 0) /* (E15) MCAN0_RX */
@@ -107,6 +119,33 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&atk_main_mcan0_pins_default>;
 	status = "okay";
+};
+
+&main_uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&atk_main_uart2_pins_default>;
+	status = "okay";
+
+	/* The board switches DE/RE using TXD, not UART RTS or a GPIO. */
+	power-rs485 {
+		compatible = "pdm,power-rs485";
+		current-speed = <9600>;
+		pdm,transaction-timeout-ms = <500>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		/* The connected SPPS3010R-2KD responds at slave address 12. */
+		dc_power: power@c {
+			compatible = "pdm,power-modbus";
+			reg = <12>;
+			pdm,id = <0>;
+			pdm,name = "dc_power";
+			pdm,register-profile = "dual-independent";
+			serial-controller = <&main_uart2>;
+			pdm,max-voltage-microvolt = <30000000>;
+			pdm,max-current-microamp = <10000000>;
+		};
+	};
 };
 
 &mcu_mcan0 {
