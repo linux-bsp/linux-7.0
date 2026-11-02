@@ -300,3 +300,10 @@ source "drivers/firmware/tegra/Kconfig"
 source "drivers/firmware/xilinx/Kconfig"
 
 endmenu
+
+config FW_BOOT_IDENTITY
+	bool "Report bootloader-provided firmware identity"
+	depends on OF
+	help
+	  Print the selected firmware tag and content ID passed in /chosen.
+	  This reports boot provenance; it does not replace image verification.

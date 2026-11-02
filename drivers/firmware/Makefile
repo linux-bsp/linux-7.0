@@ -38,3 +38,5 @@ obj-y				+= samsung/
 obj-y				+= smccc/
 obj-y				+= tegra/
 obj-y				+= xilinx/
+
+obj-$(CONFIG_FW_BOOT_IDENTITY) += boot-identity.o
