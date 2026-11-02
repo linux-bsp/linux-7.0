@@ -6,6 +6,15 @@
 
 menu "Firmware Drivers"
 
+config BSP_BOOTLOG
+    bool "BSP staged boot log importer"
+    depends on OF && HAS_IOMEM
+    select CRC32
+    help
+      Read validated R5 SPL/A53 SPL/U-Boot logs from a reserved-memory region
+      and expose read-only snapshots below /sys/firmware/bootlog.
+
+
 source "drivers/firmware/arm_scmi/Kconfig"
 
 config ARM_SCPI_PROTOCOL

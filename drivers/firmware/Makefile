@@ -40,3 +40,5 @@ obj-y				+= tegra/
 obj-y				+= xilinx/
 
 obj-$(CONFIG_FW_BOOT_IDENTITY) += boot-identity.o
+
+obj-$(CONFIG_BSP_BOOTLOG) += bsp_bootlog.o

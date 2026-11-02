@@ -248,3 +248,16 @@
 &main_rti15 {
 	status = "disabled";
 };
+
+/ {
+    reserved-memory {
+        bootlog_mem: bootlog@9c900000 {
+            reg = <0x0 0x9c900000 0x0 0x10000>;
+            no-map;
+        };
+    };
+    bootlog {
+        compatible = "bsp,bootlog-v1";
+        memory-region = <&bootlog_mem>;
+    };
+};
