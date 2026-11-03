@@ -252,12 +252,12 @@
 / {
     reserved-memory {
         bootlog_mem: bootlog@9c900000 {
-            reg = <0x0 0x9c900000 0x0 0x10000>;
+            reg = <0x0 0x9c900000 0x0 0x100000>;
             no-map;
         };
     };
     bootlog {
-        compatible = "bsp,bootlog-v1";
+        compatible = "bsp,bootlog-v2";
         memory-region = <&bootlog_mem>;
     };
 };
