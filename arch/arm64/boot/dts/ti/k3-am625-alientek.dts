@@ -36,16 +36,6 @@
 			pdm,rx-timeout-ms = <100>;
 			pdm,can-fd;
 		};
-
-		satellite: satellite@2 {
-			compatible = "pdm,satellite-can";
-			reg = <2>;
-			pdm,id = <0>;
-			pdm,name = "satellite";
-			can-controller = <&mcu_mcan0>;
-			pdm,rx-timeout-ms = <100>;
-			pdm,can-fd;
-		};
 	};
 
 	/* These peripherals are specific to the TI AM625 SK. */
